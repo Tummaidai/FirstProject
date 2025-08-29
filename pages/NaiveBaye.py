@@ -1,36 +1,41 @@
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
-#from sklearn import datasets
-#from sklearn import metrics
-
 import pandas as pd
 import streamlit as st
+import numpy as np
 
-# โหลดข้อมูล Iris
-df = pd.read_csv("./data/iris.csv")
-X = df.drop('variety',axis=1)
-y = df['variety']
+st.title("Naive Bayes Classification - Hospital Data")
 
-# แบ่งข้อมูลเป็นชุดฝึกและชุดทดสอบ
+# โหลดข้อมูล
+df = pd.read_csv("./data/Hospital_binary.csv")
+st.subheader("ตัวอย่างข้อมูล")
+st.write(df.head(10))
+
+# สมมติว่าคอลัมน์สุดท้ายเป็น target
+target_col = df.columns[-1]
+feature_cols = df.columns[:-1]
+
+X = df[feature_cols]
+y = df[target_col]
+
+# แบ่ง train/test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# สร้างและฝึกโมเดล Naive Bayes (ในกรณีของ Iris จะใช้ Gaussian Naive Bayes)
+# สร้างและฝึกโมเดล Naive Bayes
 clf = GaussianNB()
 clf.fit(X_train, y_train)
 
-# ทดสอบโมเดล
-#y_pred = clf.predict(X_test)
-
+# ส่วนรับข้อมูลจากผู้ใช้
 st.subheader("กรุณาป้อนข้อมูลเพื่อพยากรณ์")
-spW=st.number_input('Insert sepalwidth')
-spL=st.number_input('Insert sepallength')
-ptW=st.number_input('Insert petalwidth')
-ptL=st.number_input('Insert petallength')
+
+user_input = []
+for col in feature_cols:
+    val = st.number_input(f"กรอกค่า {col}", value=float(X[col].mean()))
+    user_input.append(val)
 
 if st.button("พยากรณ์"):
-    x_input=[[spW,spL,ptW,ptL]] # ใส่ข้อมูลสำหรับการจำแนกข้อมูล
-    y_predict2=clf.predict(x_input)
-    st.write(y_predict2)
-    st.button("ไม่พยากรณ์")
+    x_input = np.array([user_input])
+    y_predict2 = clf.predict(x_input)
+    st.write("ผลการพยากรณ์:", y_predict2[0])
 else:
-    st.button("ไม่พยากรณ์")
+    st.write("ยังไม่ได้กดปุ่มทำนาย")
