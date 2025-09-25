@@ -1,11 +1,11 @@
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 import streamlit as st
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-st.title('การทำนายข้อมูลโรงพยาบาลด้วยเทคนิค K-Nearest Neighbor')
+st.title('การทำนายข้อมูลโรงพยาบาลด้วยเทคนิค Neural Network (MLPClassifier)')
 
 # โหลดข้อมูล
 dt = pd.read_csv("./data/Hospital_binary.csv")
@@ -52,11 +52,18 @@ if st.button("ทำนายผล"):
     X = dt[feature_cols]
     y = dt[target_col]
 
-    Knn_model = KNeighborsClassifier(n_neighbors=3)
-    Knn_model.fit(X, y)
+    # โมเดล Neural Network
+    NN_model = MLPClassifier(
+        hidden_layer_sizes=(50, 30),  # กำหนดชั้นซ่อน 2 ชั้น (50 และ 30 นิวรอน)
+        activation='relu',
+        solver='adam',
+        max_iter=1000,
+        random_state=42
+    )
+    NN_model.fit(X, y)
 
     x_input = np.array([user_input])
-    out = Knn_model.predict(x_input)
+    out = NN_model.predict(x_input)
 
     st.write("ผลการทำนาย:", out[0])
 

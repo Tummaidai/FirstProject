@@ -1,10 +1,10 @@
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 import streamlit as st
 import numpy as np
 
-st.title("Naive Bayes Classification - Hospital Data")
+st.title("Random Forest Classification - Hospital Data")
 
 # โหลดข้อมูล
 df = pd.read_csv("./data/Hospital_binary.csv")
@@ -19,10 +19,16 @@ X = df[feature_cols]
 y = df[target_col]
 
 # แบ่ง train/test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
-# สร้างและฝึกโมเดล Naive Bayes
-clf = GaussianNB()
+# สร้างและฝึกโมเดล Random Forest
+clf = RandomForestClassifier(
+    n_estimators=100,       # จำนวนต้นไม้ (สามารถปรับได้)
+    max_depth=None,         # ความลึกสูงสุดของต้นไม้
+    random_state=42
+)
 clf.fit(X_train, y_train)
 
 # ส่วนรับข้อมูลจากผู้ใช้
